@@ -1,9 +1,10 @@
 import express from "express";
 import createHttpError from "http-errors";
 import UsersModel from "./schema.js";
+import { JWTAuthMiddleware } from "../../auth/Token.js";
 const usersRouter = express.Router();
 
-usersRouter.get("/", async (req, res, next) => {
+usersRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const users = await UsersModel.find();
     res.send(users);
@@ -56,6 +57,20 @@ usersRouter.delete("/:userId", async (req, res, next) => {
       res.status(204).send();
     } else {
       next(createHttpError(404, `user with id ${userId} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+usersRouter.post("/login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await UsersModel.checkCredentials(email, password);
+    if (user) {
+      const accessToken = await authenticateUser(user);
+      res.send({ accessToken });
+    } else {
+      next(createHttpError(401, "crediential are not OK!"));
     }
   } catch (error) {
     next(error);

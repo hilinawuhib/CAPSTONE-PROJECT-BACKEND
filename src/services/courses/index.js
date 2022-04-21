@@ -2,7 +2,6 @@ import express from "express";
 import createHttpError from "http-errors";
 import CoursesModel from "./schema.js";
 
-
 const coursesRouter = express.Router();
 
 coursesRouter.post("/", async (req, res, next) => {
@@ -42,9 +41,13 @@ coursesRouter.get("/:courseId", async (req, res, next) => {
 coursesRouter.put("/:courseId", async (req, res, next) => {
   try {
     const courseId = req.params.courseId;
-    const updatedCourse = await CoursesModel.findByIdAndUpdate(courseId, req.body, {
-      new: true,
-    });
+    const updatedCourse = await CoursesModel.findByIdAndUpdate(
+      courseId,
+      req.body,
+      {
+        new: true,
+      }
+    );
     if (updatedCourse) {
       res.send(updatedCourse);
     } else {

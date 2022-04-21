@@ -4,15 +4,10 @@ import usersRouter from "./services/users/index.js";
 import coursesRouter from "./services/courses/index.js";
 import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
-import {
-  badRequestHandler,
-  unauthorizedHandler,
-  notFoundHandler,
-  genericErrorHandler,
-} from "./errorHandlers.js";
+import { badRequestHandler,unauthorizedHandler,notFoundHandler,genericErrorHandler,} from "./errorHandlers.js";
 
 const server = express();
-const port = 3005;
+const port = 3007;
 
 server.use(cors());
 server.use(express.json());
