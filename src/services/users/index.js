@@ -1,6 +1,7 @@
 import express from "express";
 import createHttpError from "http-errors";
 import { authenticateUser } from "../../auth/Tools.js";
+import { generateJWTToken } from "../../auth/Tools.js";
 import UsersModel from "./schema.js";
 import { JWTAuthMiddleware } from "../../auth/Token.js";
 const usersRouter = express.Router();
@@ -63,11 +64,24 @@ usersRouter.delete("/:userId", async (req, res, next) => {
     next(error);
   }
 });
+usersRouter.post("/register", async (req, res, next) => {
+  try {
+    const user = await new UsersModel(req.body).save();
+    delete user._doc.password;
+
+    const token = await generateJWTToken({ id: user._id });
+
+    res.send({ user, token });
+  } catch (error) {
+    console.log({ error });
+    res.send(500).send({ message: error.message });
+  }
+});
 usersRouter.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await UsersModel.checkCredentials(email, password);
-    console.log(user)
+    console.log(user);
     if (user) {
       const accessToken = await authenticateUser(user);
       res.send({ accessToken });
