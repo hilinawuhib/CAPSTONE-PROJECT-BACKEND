@@ -1,5 +1,6 @@
 import express from "express";
 import createHttpError from "http-errors";
+import { authenticateUser } from "../../auth/Tools.js";
 import UsersModel from "./schema.js";
 import { JWTAuthMiddleware } from "../../auth/Token.js";
 const usersRouter = express.Router();
@@ -66,11 +67,12 @@ usersRouter.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await UsersModel.checkCredentials(email, password);
+    console.log(user)
     if (user) {
       const accessToken = await authenticateUser(user);
       res.send({ accessToken });
     } else {
-      next(createHttpError(401, "crediential are not OK!"));
+      next(createHttpError(401, "crediential are not ok!"));
     }
   } catch (error) {
     next(error);
