@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 export const authenticateUser = async (user) => {
   const accessToken = await generateJWTToken({
     _id: user._id,
-    role: user.role,
+ 
   });
   return accessToken;
 };
@@ -13,7 +13,7 @@ export const generateJWTToken = (payload) =>
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: "1 week" },
+      { expiresIn: "2 weeks" },
       (err, token) => {
         if (err) reject(err);
         else resolve(token);
