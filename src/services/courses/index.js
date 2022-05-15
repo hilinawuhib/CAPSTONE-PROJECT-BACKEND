@@ -71,4 +71,110 @@ coursesRouter.delete("/:courseId", async (req, res, next) => {
     next(error);
   }
 });
+// courses with the activities
+coursesRouter.get("/:courseId/activity/:activityId", async (req, res, next) => {
+  try {
+    const course = await CoursesModel.findById(req.params.courseId);
+    if (!course) {
+      res
+        .status(404)
+        .send({ message: `course with ${req.params.courseId} is not found!` });
+    } else {
+      const activityIndex = course.activity.findIndex(
+        (activity) => activity._id.toString() === req.params.activityId
+      );
+      if (activityIndex === -1) {
+        res.status(404).send({
+          message: `activity with ${req.params.activityId} is not found!`,
+        });
+      } else {
+        course.activity[activityIndex] = {
+          ...course.activity[activityIndex]._doc,
+          ...req.body,
+        };
+        await course.save();
+        res.status(204).send();
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+coursesRouter.post("/:courseId/activity", async (req, res, next) => {
+  try {
+    const course = await CoursesModel.findById(req.params.courseId);
+    if (!course) {
+      res
+        .status(404)
+        .send({ message: `course with ${req.params.courseId} is not found!` });
+    } else {
+      const newCourse = await CoursesModel.findByIdAndUpdate(
+        req.params.courseId,
+        { $push: { activity: req.body } },
+        { new: true }
+      );
+      res.send(newCourse);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+coursesRouter.put("/:courseId/activity/:activityId", async (req, res, next) => {
+  try {
+    const course = await CoursesModel.findById(req.params.courseId);
+    if (!course) {
+      res
+        .status(404)
+        .send({ message: `course with ${req.params.courseId} is not found!` });
+    } else {
+      const activityIndex = course.activity.findIndex(
+        (activity) => activity._id.toString() === req.params.activityId
+      );
+      if (activityIndex === -1) {
+        res.status(404).send({
+          message: `activity with ${req.params.activityId} is not found!`,
+        });
+      } else {
+        course.activity[activityIndex] = {
+          ...course.activity[activityIndex]._doc,
+          ...req.body,
+        };
+        await course.save();
+        res.status(204).send();
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.send(500).send({ message: error.message });
+  }
+});
+coursesRouter.delete(
+  "/:courseId/activity/:activityId",
+  async (req, res, next) => {
+    try {
+      const course = await CoursesModel.findById(req.params.courseId);
+      if (!course) {
+        res.status(404).send({
+          message: `course with ${req.params.courseId} is not found!`,
+        });
+      } else {
+        await CoursesModel.findByIdAndUpdate(
+          req.params.id,
+          {
+            $pull: {
+              activity: { _id: req.params.activityId },
+            },
+          },
+          { new: true }
+        );
+        res.status(204).send();
+      }
+    } catch (error) {
+      console.log(error);
+      res.send(500).send({ message: error.message });
+    }
+  }
+);
+
 export default coursesRouter;
