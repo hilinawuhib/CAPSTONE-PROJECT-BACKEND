@@ -2,6 +2,7 @@ import express from "express";
 import createHttpError from "http-errors";
 import CoursesModel from "./schema.js";
 
+
 const coursesRouter = express.Router();
 
 coursesRouter.post("/", async (req, res, next) => {
