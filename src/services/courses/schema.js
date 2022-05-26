@@ -7,8 +7,8 @@ const courseSchema = new Schema(
 
     activity: [
       {
-        title: { type: String },
-        contents: { type: String },
+        text: { type: String,required:true },
+      
       },
     ],
   },
